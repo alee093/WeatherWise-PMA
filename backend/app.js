@@ -5,12 +5,8 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+const weatherRoutes = require("./routes/weatherRoutes");
 
-app.get("/api", (req, res) => {
-    res.json({
-        success: true,
-        message: "WeatherWise Backend Connected!"
-    });
-});
+app.use("/api/weather", weatherRoutes);
 
 module.exports = app;
