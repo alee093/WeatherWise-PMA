@@ -1,4 +1,4 @@
-function WeatherCard() {
+function WeatherCard({ weather }) {
     return (
         <section>
             <h2>Current Weather</h2>
