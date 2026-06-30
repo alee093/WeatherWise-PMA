@@ -1,29 +1,7 @@
-import { useEffect, useState } from "react";
-import api from "./services/api";
+import Home from "./pages/Home/Home";
 
 function App() {
-    const [message, setMessage] = useState("");
-
-    useEffect(() => {
-        const fetchBackend = async () => {
-            try {
-                const response = await api.get("/");
-                setMessage(response.data.message);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        fetchBackend();
-    }, []);
-
-    return (
-        <div>
-            <h1>WeatherWise</h1>
-
-            <h2>{message}</h2>
-        </div>
-    );
+  return <Home />;
 }
 
 export default App;
