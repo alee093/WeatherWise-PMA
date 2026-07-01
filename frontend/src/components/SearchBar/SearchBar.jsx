@@ -8,9 +8,23 @@ function SearchBar({ onSearch }) {
 
     if (!city.trim()) return;
 
-    onSearch(city);
+    onSearch(city, null, null);
 
     setCity("");
+  };
+
+  const handleLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation not supported");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition((position) => {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+
+      onSearch(null, lat, lon);
+    });
   };
 
   return (
@@ -28,7 +42,7 @@ function SearchBar({ onSearch }) {
         </button>
       </form>
 
-      <button>
+      <button type="button" onClick={handleLocation}>
         📍 My Location
       </button>
     </section>
