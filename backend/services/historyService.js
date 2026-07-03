@@ -4,8 +4,10 @@ const addSearch = async (data) => {
   return await History.create(data);
 };
 
-const getHistory = async (filters = {}) => {
-  const query = {};
+const getHistory = async (clientId, filters = {}) => {
+  const query = {
+    clientId,
+  };
 
   if (filters.city) {
     query.city = {
@@ -33,8 +35,11 @@ const getHistory = async (filters = {}) => {
   });
 };
 
-const deleteItem = async (id) => {
-  await History.findByIdAndDelete(id);
+const deleteItem = async (id, clientId) => {
+  await History.findOneAndDelete({
+    _id: id,
+    clientId,
+  });
 
   return {
     message: "Deleted successfully",

@@ -14,7 +14,12 @@ const add = async (req, res) => {
 
 const get = async (req, res) => {
   try {
-    const history = await historyService.getHistory(req.query);
+    const clientId = req.headers["x-client-id"];
+
+    const history = await historyService.getHistory(
+      clientId,
+      req.query
+    );
 
     res.json(history);
   } catch (error) {
@@ -26,7 +31,12 @@ const get = async (req, res) => {
 
 const remove = async (req, res) => {
   try {
-    await historyService.deleteItem(req.params.id);
+    const clientId = req.headers["x-client-id"];
+
+    await historyService.deleteItem(
+      req.params.id,
+      clientId
+    );
 
     res.json({
       message: "Deleted successfully",

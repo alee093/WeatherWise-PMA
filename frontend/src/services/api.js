@@ -1,7 +1,14 @@
 import axios from "axios";
+import { getClientId } from "../utils/clientId";
 
 const api = axios.create({
   baseURL: "http://localhost:3000/api",
+});
+
+api.interceptors.request.use((config) => {
+  config.headers["x-client-id"] = getClientId();
+
+  return config;
 });
 
 export const getWeather = async (city, lat, lon) => {
@@ -21,6 +28,10 @@ export const getHistory = async (filters = {}) => {
     params: filters,
   });
 
+  return response.data;
+};
+export const deleteHistory = async (id) => {
+  const response = await api.delete(`/history/${id}`);
   return response.data;
 };
 

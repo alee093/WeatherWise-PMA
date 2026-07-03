@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 
 const historySchema = new mongoose.Schema(
   {
+    clientId: {
+      type: String,
+      required: true,
+    },
     city: {
       type: String,
       required: true,

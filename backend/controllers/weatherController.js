@@ -5,20 +5,29 @@ const getWeather = async (req, res) => {
 try {
     const { city, lat, lon } = req.query;
 
+    const clientId = req.headers["x-client-id"];
+
     const data = await weatherService.getWeather(city, lat, lon);
 
     await historyService.addSearch({
+    clientId,
+
     city: data.city,
     country: data.country,
     temperature: data.temperature,
+
     latitude: data.latitude,
     longitude: data.longitude,
+
     humidity: data.humidity,
     feelsLike: data.feelsLike,
+
     wind: data.wind,
     pressure: data.pressure,
+
     visibility: data.visibility,
     uvIndex: data.uvIndex,
+
     weatherCode: data.weatherCode,
     });
 

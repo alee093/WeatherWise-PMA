@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { getHistory } from "../../services/api";
+import { getHistory, deleteHistory } from "../../services/api";
 import "./History.css";
 import { formatHistoryDate } from "../../utils/dateUtils";
 
@@ -62,7 +61,7 @@ function History({ refresh, onSelectCity }) {
       type: "text/csv",
     });
 
-    const url = URL.createObjectURL(url);
+    const url = URL.createObjectURL(blob);
 
     const a = document.createElement("a");
     a.href = url;
@@ -74,7 +73,7 @@ function History({ refresh, onSelectCity }) {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/api/history/${id}`);
+      await deleteHistory(id);
       fetchHistory();
     } catch (error) {
       console.error(error);
