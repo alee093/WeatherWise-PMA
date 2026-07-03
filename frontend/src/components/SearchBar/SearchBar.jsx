@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./SearchBar.css";
 
 function SearchBar({ onSearch }) {
   const [city, setCity] = useState("");
@@ -28,22 +29,23 @@ function SearchBar({ onSearch }) {
   };
 
   return (
-    <section>
-      <form onSubmit={handleSubmit}>
+    <section className="search-section">
+      <form onSubmit={handleSubmit} className="form-container">
         <input
           type="text"
           placeholder="Search city..."
           value={city}
           onChange={(e) => setCity(e.target.value)}
+          className="search-input"
         />
 
-        <button type="submit">
-          Search
+        <button type="submit" className="search-button">
+          <i className="bi bi-search"></i>
         </button>
       </form>
 
-      <button type="button" onClick={handleLocation}>
-        📍 My Location
+      <button type="button" onClick={handleLocation} className="location-button">
+        <i className="bi bi-geo-alt"></i> My Location
       </button>
     </section>
   );

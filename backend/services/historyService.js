@@ -1,21 +1,44 @@
-let history = [];
+const History = require("../models/History");
 
-const addSearch = (data) => {
-  history.unshift({
-    id: Date.now(),
-    ...data,
+const addSearch = async (data) => {
+  return await History.create(data);
+};
+
+const getHistory = async (filters = {}) => {
+  const query = {};
+
+  if (filters.city) {
+    query.city = {
+      $regex: filters.city,
+      $options: "i",
+    };
+  }
+
+  if (filters.from || filters.to) {
+    query.createdAt = {};
+
+    if (filters.from) {
+      query.createdAt.$gte = new Date(filters.from);
+    }
+
+    if (filters.to) {
+      const endDate = new Date(filters.to);
+      endDate.setHours(23, 59, 59, 999);
+      query.createdAt.$lte = endDate;
+    }
+  }
+
+  return await History.find(query).sort({
+    createdAt: -1,
   });
-
-  return history;
 };
 
-const getHistory = () => {
-  return history;
-};
+const deleteItem = async (id) => {
+  await History.findByIdAndDelete(id);
 
-const deleteItem = (id) => {
-  history = history.filter((item) => item.id !== Number(id));
-  return history;
+  return {
+    message: "Deleted successfully",
+  };
 };
 
 module.exports = {

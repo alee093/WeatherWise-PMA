@@ -1,13 +1,20 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { getHistory } from "../../services/api";
+import "./History.css";
+import { formatHistoryDate } from "../../utils/dateUtils";
 
-function History({ refreshTrigger }) {
+function History({ refresh, onSelectCity }) {
   const [history, setHistory] = useState([]);
+  const [cityFilter, setCityFilter] = useState("");
 
   const fetchHistory = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/history");
-      setHistory(res.data);
+      const data = await getHistory({
+        city: cityFilter,
+      });
+
+      setHistory(data);
     } catch (error) {
       console.error(error);
     }
@@ -15,12 +22,20 @@ function History({ refreshTrigger }) {
 
   useEffect(() => {
     fetchHistory();
-  }, [refreshTrigger]);
+  }, [refresh]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      fetchHistory();
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [cityFilter]);
 
   const exportJSON = () => {
-    const dataStr = JSON.stringify(history, null, 2);
-
-    const blob = new Blob([dataStr], { type: "application/json" });
+    const blob = new Blob([JSON.stringify(history, null, 2)], {
+      type: "application/json",
+    });
 
     const url = URL.createObjectURL(blob);
 
@@ -35,17 +50,19 @@ function History({ refreshTrigger }) {
   const exportCSV = () => {
     if (!history.length) return;
 
-    const headers = ["id", "city", "country", "temperature"];
+    const headers = ["City", "Country", "Temperature"];
 
-    const rows = history.map(item =>
-      [item.id, item.city, item.country, item.temperature].join(",")
+    const rows = history.map((item) =>
+      [item.city, item.country, item.temperature].join(",")
     );
 
-    const csvContent = [headers.join(","), ...rows].join("\n");
+    const csv = [headers.join(","), ...rows].join("\n");
 
-    const blob = new Blob([csvContent], { type: "text/csv" });
+    const blob = new Blob([csv], {
+      type: "text/csv",
+    });
 
-    const url = URL.createObjectURL(blob);
+    const url = URL.createObjectURL(url);
 
     const a = document.createElement("a");
     a.href = url;
@@ -58,40 +75,74 @@ function History({ refreshTrigger }) {
   const handleDelete = async (id) => {
     try {
       await axios.delete(`http://localhost:3000/api/history/${id}`);
-      fetchHistory(); // refrescar lista
+      fetchHistory();
     } catch (error) {
       console.error(error);
     }
   };
 
-  if (!history.length) {
-    return (
-      <section>
-        <h2>History</h2>
-        <p>No searches yet.</p>
-      </section>
-    );
-  }
-
   return (
-    <section>
-      <h2>Search History</h2>
+    <section className="history-section">
+      <div className="history-header">
+        <h2>Search History</h2>
 
-      <ul>
-        {history.map((item) => (
-          <li key={item.id}>
-            <strong>{item.city}</strong> - {item.country} ({item.temperature}°C)
+        <div className="history-actions">
+          <button className="json-btn" onClick={exportJSON}>
+            JSON
+          </button>
 
-            <button onClick={() => handleDelete(item.id)}>
-              🗑 Delete
-            </button>
-          </li>
-        ))}
-      </ul>
-      <div style={{ marginBottom: "10px" }}>
-        <button onClick={exportJSON}>Export JSON</button>
-        <button onClick={exportCSV}>Export CSV</button>
+          <button className="csv-btn" onClick={exportCSV}>
+            CSV
+          </button>
+        </div>
       </div>
+
+      <div className="history-search">
+        <input
+          type="text"
+          placeholder="🔍 Search city..."
+          value={cityFilter}
+          onChange={(e) => setCityFilter(e.target.value)}
+        />
+      </div>
+
+      {!history.length ? (
+        <p className="empty-history">No searches found.</p>
+      ) : (
+        <div className="history-list">
+          {history.map((item) => (
+            <div
+              key={item.id || item._id}
+              className="history-card"
+              onClick={() => onSelectCity(item.city)}
+            >
+              <div className="history-left">
+                <h3>📍 {item.city}</h3>
+
+                <p>{item.country}</p>
+
+                <small>
+                  {formatHistoryDate(item.createdAt)}
+                </small>
+              </div>
+
+              <div className="history-right">
+                <span>{Math.round(item.temperature)}°</span>
+
+                <button
+                  className="delete-button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(item.id || item._id);
+                  }}
+                >
+                  🗑
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

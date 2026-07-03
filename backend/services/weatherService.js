@@ -8,11 +8,36 @@ const getWeather = async (city, lat, lon) => {
   let latitude, longitude, name, country;
 
   if (lat && lon) {
-    latitude = lat;
-    longitude = lon;
-    name = "Your location";
-    country = "";
-  } else {
+    latitude = Number(lat);
+    longitude = Number(lon);
+
+    const reverseResponse = await axios.get(
+      "https://nominatim.openstreetmap.org/reverse",
+      {
+        params: {
+          lat: latitude,
+          lon: longitude,
+          format: "json",
+        },
+        headers: {
+          "User-Agent": "WeatherWise/1.0",
+        },
+      }
+    );
+
+    const address = reverseResponse.data.address;
+
+    name =
+      address.city ||
+      address.town ||
+      address.village ||
+      address.municipality ||
+      address.county ||
+      "Current Location";
+
+    country = address.country || "Unknown";
+  }
+  else {
 
     const geocodingResponse = await axios.get(
       "https://geocoding-api.open-meteo.com/v1/search",
@@ -36,6 +61,7 @@ const getWeather = async (city, lat, lon) => {
     longitude = location.longitude;
     name = location.name;
     country = location.country;
+    
   }
 
   const weatherResponse = await axios.get(
@@ -50,10 +76,14 @@ const getWeather = async (city, lat, lon) => {
           "relative_humidity_2m",
           "apparent_temperature",
           "wind_speed_10m",
-          "weathercode",
+          "weather_code",
+          "surface_pressure",
+          "visibility",
+          "uv_index",
         ],
 
         daily: [
+          "weathercode",
           "temperature_2m_max",
           "temperature_2m_min",
           "sunrise",
@@ -85,56 +115,56 @@ const getWeather = async (city, lat, lon) => {
 
     if (temperature <= 5)
       recommendations.push({
-        category: "👕 Clothing",
+        category: "👕",
         text: "Wear a heavy coat, gloves and warm clothing.",
       });
     else if (temperature <= 15)
       recommendations.push({
-        category: "👕 Clothing",
+        category: "👕",
         text: "A jacket or sweater is recommended.",
       });
     else if (temperature >= 28)
       recommendations.push({
-        category: "👕 Clothing",
+        category: "👕",
         text: "Wear light clothing and sunglasses.",
       });
 
     if (weatherCode <= 3)
       recommendations.push({
-        category: "🚶 Outdoor",
+        category: "🚶",
         text: "Great weather for walking, cycling or sightseeing.",
       });
     else
       recommendations.push({
-        category: "🚶 Outdoor",
+        category: "🚶",
         text: "Outdoor plans may be affected by weather conditions.",
       });
 
     if (wind >= 30)
       recommendations.push({
-        category: "🚗 Travel",
+        category: "🚗",
         text: "Strong winds expected. Drive carefully.",
       });
     else
       recommendations.push({
-        category: "🚗 Travel",
+        category: "🚗",
         text: "Good conditions for traveling.",
       });
 
     if (humidity >= 80)
       recommendations.push({
-        category: "💧 Health",
+        category: "💧",
         text: "High humidity may make it feel warmer.",
       });
 
     if (temperature >= 30)
       recommendations.push({
-        category: "💧 Health",
+        category: "💧",
         text: "Stay hydrated and avoid prolonged sun exposure.",
       });
 
     recommendations.push({
-      category: "🌅 Daylight",
+      category: "🌅",
       text: `Sunrise: ${new Date(sunrise).toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
@@ -211,11 +241,16 @@ const getWeather = async (city, lat, lon) => {
     humidity: current.relative_humidity_2m,
     feelsLike: current.apparent_temperature,
     wind: current.wind_speed_10m,
+    pressure: current.surface_pressure,
+    visibility: current.visibility,
+    uvIndex: current.uv_index,
+    weatherCode: current.weather_code,
 
     forecast: {
       time: daily.time,
       temperature_2m_max: daily.temperature_2m_max,
       temperature_2m_min: daily.temperature_2m_min,
+      weatherCode: daily.weathercode,
     },
     recommendations: getRecommendations(
       current.temperature_2m,

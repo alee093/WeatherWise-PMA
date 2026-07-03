@@ -1,18 +1,41 @@
 const historyService = require("../services/historyService");
 
-const add = (req, res) => {
-  const updated = historyService.addSearch(req.body);
-  res.json(updated);
+const add = async (req, res) => {
+  try {
+    const history = await historyService.addSearch(req.body);
+
+    res.status(201).json(history);
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
 };
 
-const get = (req, res) => {
-  res.json(historyService.getHistory());
+const get = async (req, res) => {
+  try {
+    const history = await historyService.getHistory(req.query);
+
+    res.json(history);
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
 };
 
-const remove = (req, res) => {
-  const { id } = req.params;
-  const updated = historyService.deleteItem(id);
-  res.json(updated);
+const remove = async (req, res) => {
+  try {
+    await historyService.deleteItem(req.params.id);
+
+    res.json({
+      message: "Deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
 };
 
 module.exports = {

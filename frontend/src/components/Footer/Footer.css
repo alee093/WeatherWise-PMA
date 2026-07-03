@@ -1,0 +1,49 @@
+.footer{
+
+    margin-top:3rem;
+
+    margin-bottom:2rem;
+
+}
+
+.footer-content{
+
+    background:#ffffff;
+
+    border-radius:24px;
+
+    padding:2rem;
+
+    text-align:center;
+
+    box-shadow:0 12px 35px rgba(0,0,0,.08);
+
+}
+
+.footer h3{
+
+    margin:0;
+
+    color:#2563eb;
+
+    font-size:1.4rem;
+
+}
+
+.footer p{
+
+    margin:1rem 0;
+
+    color:#6b7280;
+
+    line-height:1.6;
+
+}
+
+.footer span{
+
+    color:#9ca3af;
+
+    font-size:.9rem;
+
+}

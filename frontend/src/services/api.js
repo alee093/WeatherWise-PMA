@@ -16,4 +16,12 @@ export const getWeather = async (city, lat, lon) => {
   return response.data;
 };
 
+export const getHistory = async (filters = {}) => {
+  const response = await api.get("/history", {
+    params: filters,
+  });
+
+  return response.data;
+};
+
 export default api;

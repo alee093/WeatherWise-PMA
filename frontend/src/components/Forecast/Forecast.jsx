@@ -1,33 +1,50 @@
+import { getWeatherInfo } from "../../utils/weatherUtils";
+import "./Forecast.css";
+
 function Forecast({ forecast }) {
   if (!forecast) return null;
 
   return (
-    <section>
-      <h2>5-Day Forecast</h2>
+    <section className="forecast-section">
+      <h2 className="forecast-title">5-Day Forecast</h2>
 
-      <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-        {forecast.time.map((day, index) => (
-          <div
-            key={day}
-            style={{
-              padding: "10px",
-              border: "1px solid #ccc",
-              borderRadius: "8px",
-              minWidth: "120px",
-            }}
-          >
-            <p>
-              {new Date(day).toLocaleDateString("en-US", {
-                weekday: "short",
-                month: "short",
-                day: "numeric",
-              })}
-            </p>
+      <div className="forecast-container">
+        {forecast.time.map((day, index) => {
+          const weatherInfo = getWeatherInfo(
+            forecast.weatherCode?.[index] ?? 0
+          );
 
-            <p>🔥 Max: {forecast.temperature_2m_max[index]}°C</p>
-            <p>❄ Min: {forecast.temperature_2m_min[index]}°C</p>
-          </div>
-        ))}
+          return (
+            <div key={day} className="forecast-card">
+              <p className="forecast-day">
+                {new Date(day).toLocaleDateString("en-US", {
+                  weekday: "short",
+                })}
+              </p>
+
+              <span className="forecast-icon">
+                {weatherInfo.icon}
+              </span>
+
+              <p className="forecast-date">
+                {new Date(day).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                })}
+              </p>
+
+              <div className="forecast-temp">
+                <span className="max">
+                  ↑ {Math.round(forecast.temperature_2m_max[index])}°
+                </span>
+
+                <span className="min">
+                  ↓ {Math.round(forecast.temperature_2m_min[index])}°
+                </span>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </section>
   );
