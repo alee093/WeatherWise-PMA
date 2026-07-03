@@ -45,9 +45,45 @@ const deleteItem = async (id, clientId) => {
     message: "Deleted successfully",
   };
 };
+const updateItem = async (id, clientId, data) => {
+  const allowedFields = [
+    "city",
+    "country",
+    "temperature",
+    "humidity",
+    "feelsLike",
+    "wind",
+    "pressure",
+  ];
+
+  const updates = {};
+
+  for (const field of allowedFields) {
+    if (data[field] !== undefined) {
+      updates[field] = data[field];
+    }
+  }
+
+  if (Object.keys(updates).length === 0) {
+    throw new Error("No valid fields to update");
+  }
+
+  const updated = await History.findOneAndUpdate(
+    { _id: id, clientId },
+    { $set: updates },
+    { new: true, runValidators: true }
+  );
+
+  if (!updated) {
+    throw new Error("Record not found");
+  }
+
+  return updated;
+};
 
 module.exports = {
   addSearch,
   getHistory,
   deleteItem,
+  updateItem,
 };

@@ -36,4 +36,9 @@ export const deleteHistory = async (id) => {
   return response.data;
 };
 
+export const updateHistory = async (id, data) => {
+  const response = await api.put(`/history/${id}`, data);
+  return response.data;
+};
+
 export default api;

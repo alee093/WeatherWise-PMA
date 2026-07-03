@@ -48,8 +48,27 @@ const remove = async (req, res) => {
   }
 };
 
+const update = async (req, res) => {
+  try {
+    const clientId = req.headers["x-client-id"];
+
+    const updated = await historyService.updateItem(
+      req.params.id,
+      clientId,
+      req.body
+    );
+
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   add,
   get,
   remove,
+  update,
 };
