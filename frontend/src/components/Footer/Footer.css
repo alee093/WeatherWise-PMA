@@ -52,12 +52,17 @@
 margin-top: 16px;
 padding-top: 16px;
 border-top: 1px solid rgba(255, 255, 255, 0.15);
-max-width: 600px;
+width: 100%;
+display: flex;
+flex-direction: column;
+align-items: center
+
 }
 
 .footer-pma h4 {
 margin-bottom: 8px;
 font-size: 1rem;
+max-width: 600px;
 }
 
 .footer-pma p {
@@ -65,12 +70,14 @@ font-size: 0.85rem;
 line-height: 1.5;
 opacity: 0.85;
 margin-bottom: 10px;
+max-width: 600px;
 }
 
 .footer-pma a {
 color: inherit;
 text-decoration: underline;
 font-size: 0.85rem;
+max-width: 600px;
 }
 
 .footer-pma a:hover {
