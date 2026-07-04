@@ -12,7 +12,7 @@ Built by **Alejandro Baran** for the PM Accelerator AI Engineer Intern Technical
 - **Backend API:** `https://weather-wise-pma.vercel.app`
 
 ## 🎥 Demo Video
-
+`https://www.loom.com/share/6fc4614b90014702a59029dc01388fbc`
 
 ---
 
