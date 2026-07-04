@@ -22,6 +22,7 @@ const getWeather = async (city, lat, lon) => {
         headers: {
           "User-Agent": "WeatherWise/1.0",
         },
+        timeout: 8000,
       }
     );
 
@@ -48,6 +49,7 @@ const getWeather = async (city, lat, lon) => {
           language: "en",
           format: "json",
         },
+        timeout: 8000,
       }
     );
 
@@ -93,6 +95,7 @@ const getWeather = async (city, lat, lon) => {
         forecast_days: 5,
         timezone: "auto",
       },
+      timeout: 8000,
     }
   );
 
