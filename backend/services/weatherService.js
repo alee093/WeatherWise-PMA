@@ -11,20 +11,26 @@ const getWeather = async (city, lat, lon) => {
     latitude = Number(lat);
     longitude = Number(lon);
 
-    const reverseResponse = await axios.get(
-      "https://nominatim.openstreetmap.org/reverse",
-      {
-        params: {
-          lat: latitude,
-          lon: longitude,
-          format: "json",
-        },
-        headers: {
-          "User-Agent": "WeatherWise/1.0",
-        },
-        timeout: 8000,
-      }
-    );
+    let reverseResponse;
+
+    try {
+      reverseResponse = await axios.get(
+        "https://nominatim.openstreetmap.org/reverse",
+        {
+          params: {
+            lat: latitude,
+            lon: longitude,
+            format: "json",
+          },
+          headers: {
+            "User-Agent": "WeatherWise/1.0",
+          },
+          timeout: 8000,
+        }
+      );
+    } catch (err) {
+      throw new Error("NOMINATIM_ERROR: " + err.message);
+    }
 
     const address = reverseResponse.data.address;
 
@@ -40,18 +46,24 @@ const getWeather = async (city, lat, lon) => {
   }
   else {
 
-    const geocodingResponse = await axios.get(
-      "https://geocoding-api.open-meteo.com/v1/search",
-      {
-        params: {
-          name: city,
-          count: 1,
-          language: "en",
-          format: "json",
-        },
-        timeout: 8000,
-      }
-    );
+    let geocodingResponse;
+
+    try {
+      geocodingResponse = await axios.get(
+        "https://geocoding-api.open-meteo.com/v1/search",
+        {
+          params: {
+            name: city,
+            count: 1,
+            language: "en",
+            format: "json",
+          },
+          timeout: 8000,
+        }
+      );
+    } catch (err) {
+      throw new Error("GEOCODING_ERROR: " + err.message);
+    }
 
     const location = geocodingResponse.data.results?.[0];
 
@@ -63,41 +75,47 @@ const getWeather = async (city, lat, lon) => {
     longitude = location.longitude;
     name = location.name;
     country = location.country;
-    
+
   }
 
-  const weatherResponse = await axios.get(
-    "https://api.open-meteo.com/v1/forecast",
-    {
-      params: {
-        latitude,
-        longitude,
+  let weatherResponse;
 
-        current: [
-          "temperature_2m",
-          "relative_humidity_2m",
-          "apparent_temperature",
-          "wind_speed_10m",
-          "weather_code",
-          "surface_pressure",
-          "visibility",
-          "uv_index",
-        ],
+  try {
+    weatherResponse = await axios.get(
+      "https://api.open-meteo.com/v1/forecast",
+      {
+        params: {
+          latitude,
+          longitude,
 
-        daily: [
-          "weathercode",
-          "temperature_2m_max",
-          "temperature_2m_min",
-          "sunrise",
-          "sunset"
-        ],
+          current: [
+            "temperature_2m",
+            "relative_humidity_2m",
+            "apparent_temperature",
+            "wind_speed_10m",
+            "weather_code",
+            "surface_pressure",
+            "visibility",
+            "uv_index",
+          ],
 
-        forecast_days: 5,
-        timezone: "auto",
-      },
-      timeout: 8000,
-    }
-  );
+          daily: [
+            "weathercode",
+            "temperature_2m_max",
+            "temperature_2m_min",
+            "sunrise",
+            "sunset"
+          ],
+
+          forecast_days: 5,
+          timezone: "auto",
+        },
+        timeout: 8000,
+      }
+    );
+  } catch (err) {
+    throw new Error("FORECAST_ERROR: " + err.message);
+  }
 
   const current = weatherResponse.data.current;
   const daily = weatherResponse.data.daily;
